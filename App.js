@@ -10,11 +10,9 @@ import MyContent from './Components/MyContent';
 export default observer( class App extends React.Component {
     render() {
         return (
-            <Container style={{flex:1}}>
+            <Container style={{flex:1, justifyContent: 'space-around'}}>
                 <MyHeader style={{flex:1}} store={store} />
-                <View style={{flex:3}}>
-                <MyContent store={store} />
-                </View>
+                <MyContent style={{flex:3}} store={store} />
             </Container>
     );
   }

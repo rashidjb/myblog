@@ -19,7 +19,6 @@ export default observer(class MyHeader extends React.Component {
         return (
             <Header style={styles.header}>
                 <Left>
-                    {this.returnThumbnail()}
                 </Left>
                 <Body>
                     <Title style = {styles.title}>{this.props.store.pageTitle}</Title>
@@ -33,8 +32,8 @@ export default observer(class MyHeader extends React.Component {
 const styles = {
     header:{
         //height: 100,
-        paddingTop: 65,
-        paddingBottom: 40,
+        //paddingTop: 65,
+        //paddingBottom: 40,
         backgroundColor: 'grey',
         marginTop: 0,
     },

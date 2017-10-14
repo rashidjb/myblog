@@ -5,16 +5,19 @@ import { observer } from "mobx-react";
 import {NativeRouter, Route, Link, Redirect} from 'react-router-native';
 
 import auth from "./auth";
+import store from "../Store"
 
 export default observer(class NewPost extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            url: "http://139.59.119.40/api/create/",
-            title: '',
-            content: '',
-            draft: false,
-            publish: '',
+            url: "http://139.59.119.40/api/update/"+this.props.store.slug,
+            post: {
+                "title": "",
+                "content": "",
+                "draft": false,
+                "publish": ""
+            },
             year: '',
             month: '',
             day: '',
@@ -28,14 +31,47 @@ export default observer(class NewPost extends React.Component {
     }
 
     invertDraft(){
-        var status = this.state.draft;
+        var status = this.state.post.draft;
         this.setState({
             draft: !status,
         })
     }
+
+    getData(){
+        console.log('Fetching Post to update');
+        //console.log(this.state.url);
+        console.log("token", this.props.store.token);
+        console.log("title", this.props.store.pageTitle);
+        console.log(headers:{
+            // "Accept": 'application/json',
+            // "Content-Type":"application/json",
+            "Authorization": "JWT ", this.props.store.token,
+        });
+        fetch(this.state.url, {
+            method: 'GET',
+            headers:{
+                // "Accept": 'application/json',
+                // "Content-Type":"application/json",
+                "Authorization": "JWT "+this.props.store.token,
+            },
+        })
+        .then((response) => response.json())
+        .then((response) => {
+            // console.log("Aquired data:");
+            console.log(response);
+            this.setState({
+                post: response,
+                fetchOK: true,
+                year: response.publish.slice(0,4),
+                month: response.publish.slice(5,7),
+                day: response.publish.slice(8,),
+            });
+        }).catch((error) => console.log(error)).done();
+    }
     componentWillMount(){
         auth.firstLoad();
-        this.props.store.pageTitle = "Add a Post"
+        this.props.store.pageTitle = "Update Post"
+        this.getData();
     }
 
     sendData(){
@@ -58,7 +94,7 @@ export default observer(class NewPost extends React.Component {
             this.setState({
                 requestOK: response.ok,
             });
-            //console.log(this.state.requestOK);
+            console.log(this.state.requestOK);
         })
         .catch((error) => console.log(error)).done();
     }
@@ -72,6 +108,7 @@ export default observer(class NewPost extends React.Component {
                             <Label>Title:</Label>
                             <Input rounded
                                     autoCapitalize = 'none'
+                                    defaultValue =  {this.state.post.title}
                                     onChangeText={(title) =>
                                         this.setState({"title": title},
                                     )}
@@ -81,6 +118,7 @@ export default observer(class NewPost extends React.Component {
                         <Item floatingLabel style = {styles.textInput}>
                             <Label>Content:</Label>
                             <Input rounded
+                                    defaultValue =  {this.state.post.content}
                                     autoCapitalize = 'none'
                                     onChangeText={(content) =>
                                         this.setState({"content": content},
@@ -89,7 +127,7 @@ export default observer(class NewPost extends React.Component {
                         </Item>
                         <ListItem style={{backgroundColor: 'gainsboro'}}>
                             <CheckBox
-                                checked={this.state.draft}
+                                checked={this.state.post.draft}
                                 color='black'
                                 onPress={this.invertDraft.bind(this)}
                             />
@@ -109,6 +147,7 @@ export default observer(class NewPost extends React.Component {
                                         autoCapitalize = 'none'
                                         keyboardType = 'number-pad'
                                         maxLength = {4}
+                                        defaultValue =  {this.state.year}
                                         style = {styles.input}
                                         onChangeText={(year) =>
                                             this.setState({"year": year},
@@ -122,6 +161,7 @@ export default observer(class NewPost extends React.Component {
                                 <Input rounded
                                         autoCapitalize = 'none'
                                         keyboardType = 'number-pad'
+                                        defaultValue =  {this.state.month}
                                         maxLength = {2}
                                         onChangeText={(month) =>
                                             this.setState({"month": month},
@@ -135,6 +175,7 @@ export default observer(class NewPost extends React.Component {
                                 <Input rounded
                                         autoCapitalize = 'none'
                                         keyboardType = 'number-pad'
+                                        defaultValue =  {this.state.day}
                                         maxLength = {2}
                                         onChangeText={(day) =>
                                             this.setState({"day": day},

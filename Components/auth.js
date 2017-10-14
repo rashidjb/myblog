@@ -3,6 +3,7 @@ import store from '../Store';
 import {AsyncStorage} from 'react-native';
 
 const auth = observer(new class auth {
+
     login(username,password){
         this.getToken(username,password);
     }
@@ -14,6 +15,7 @@ const auth = observer(new class auth {
         store.token = "";
         store.username = "";
     }
+
     firstLoad() {
         if (this.loggedIn()) {
             AsyncStorage.getItem('token').then((x) => store.token = x)
@@ -21,6 +23,7 @@ const auth = observer(new class auth {
             AsyncStorage.getItem('username').then((x) => store.token = x)
         }
     }
+
     loggedIn(){
         AsyncStorage.getItem('token',
             (err, result) => {
@@ -32,7 +35,6 @@ const auth = observer(new class auth {
             }
         )
     }
-
 
     signup(username,password){
         fetch('http://139.59.119.40/api/register/',

@@ -17,7 +17,7 @@ export default observer(class SignOut extends React.Component {
         if (!this.props.store.authenticated) {
         return (
             <Container>
-                <Text> Login:</Text>
+                <Text>Login:</Text>
                 <Form>
                     <Item>
                         <Label>Username: </Label>

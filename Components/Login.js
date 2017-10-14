@@ -10,8 +10,8 @@ export default observer(class Login extends React.Component {
     constructor(props) {
     super(props);
     this.state = {
-        "username": '',
-        "password": '',
+        "username": 'fawaz',
+        "password": 'adminadmin',
     };
   }
     handleSubmit(e){
@@ -26,10 +26,10 @@ export default observer(class Login extends React.Component {
     render() {
         if (!this.props.store.authenticated) {
         return (
-            <Container style={{justifyContent: 'center'}}>
+            <Container style={{flex: 1}}>
                 <Text> Login:</Text>
-                <Form>
-                    <Item floatingLabel>
+                <Form style={{flex: 1}}>
+                    <Item floatingLabel style = {styles.input}>
                         <Label>Username:</Label>
                         <Input rounded
                                 autoCapitalize = 'none'
@@ -38,7 +38,7 @@ export default observer(class Login extends React.Component {
                                 )}
                         />
                     </Item>
-                    <Item floatingLabel>
+                    <Item floatingLabel style = {styles.input}>
                         <Label>Password:</Label>
                         <Input  rounded
                                 secureTextEntry={true}
@@ -60,3 +60,9 @@ export default observer(class Login extends React.Component {
         }
     }
 })
+
+const styles = {
+    input:{
+        borderColor: 'black',
+    }
+};

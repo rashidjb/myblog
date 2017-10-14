@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {List, ListItem} from 'native-base';
-import { Image, TouchableOpacity } from 'react-native';
+import { Image } from 'react-native';
 import {
     Spinner, Container, Header, Content, Card,
     CardItem, Thumbnail, Text, Button, Icon,
@@ -24,24 +24,22 @@ export default observer(class Posts extends Component {
             nextUrl: '',
             previousUrl: '',
             pageNumber: 1,
-            totalPages: 1,
+            totalPages: 0,
             count: 0,
             limit: 0,
-            count: 0,
         }
-        this.handlePress = this.handlePress.bind(this);
     }
     componentWillMount(){
         auth.firstLoad();
-        if(!store.posts.dataFetched){
+        if(!store.posts.dataFetched || store.newPost){
             this.fetchData();
+            store.newPost = false;
         }
         //this.fetchData();
         store.pageTitle = "Posts";
         this.state.nextUrl = store.posts.nextUrl;
         this.state.previousUrl = store.posts.previousUrl;
         this.state.totalPages = store.posts.totalPages;
-        //console.log("datafetched: ",store.posts.dataFetched);
     }
     componentWillUnmount(){
         store.posts.nextUrl = this.state.nextUrl;
@@ -50,9 +48,7 @@ export default observer(class Posts extends Component {
     }
 
     fetchData(){
-        console.log('Fetching Data');
-        // store.counter += 1;
-        // console.log("Number of Fetches: ", store.counter-1);
+        //console.log('Fetching Data');
         fetch(this.state.url, {
             method: 'GET',
             headers:{
@@ -63,26 +59,23 @@ export default observer(class Posts extends Component {
         })
         .then((response) => response.json())
         .then((response) => {
-            //console.log("Aquired data:");
+            // console.log("Aquired data:");
             //console.log(response);
-
-            if (response.next){
+            if (store.posts.initialFetch){
                 var limit = response.next.indexOf('limit');
                 limit = response.next[limit+6]
                 //console.log('position:', limit);
-                //console.log('count:', response.count);
+                console.log('count:', response.count);
                 var pageCount = response.count/limit
                 pageCount = Math.ceil(pageCount);
                 this.setState({
                     totalPages: pageCount,
                 });
             }
-
             this.setState({
                 dataSource: this.state.dataSource.cloneWithRows(response.results),
                 nextUrl: response.next,
                 previousUrl: response.previous,
-                count: response.count,
             });
             // console.log("dataSource in state:");
             // console.log(this.state.dataSource);
@@ -93,33 +86,42 @@ export default observer(class Posts extends Component {
             store.posts.dataFetched = true;
             //console.log(store.posts.dataFetched);
             store.posts.initialFetch = false;
-            store.newPost = false;
         }).catch((error) => console.log(error)).done();
     }
-
     handlePress(url){
-        //console.log('url: ');
-        //console.log(url);
+        console.log('url: ');
+        console.log(url);
         store.posts.detailsURL = url;
     }
 
     renderItem(object){
         //console.log(object);
         return(
-            <TouchableOpacity >
-                <Link onPress = {() => this.handlePress(object.detail)}
-                        exact to='/PostDetails'>
-                    <Card>
-                        <CardItem>
-                            <Body>
-                                <Text>{object.id}</Text>
-                                <Text>{object.title}</Text>
-                                <Text note>{object.publish}</Text>
-                            </Body>
-                        </CardItem>
-                    </Card>
-                </Link>
-            </TouchableOpacity>
+            <Card style={{marginBottom: 20}}>
+                <CardItem>
+                    <Body>
+                        <Text>{object.title}</Text>
+                        <Text note>{object.publish}</Text>
+                    </Body>
+                </CardItem>
+                <CardItem>
+                    <Left>
+                        <Button transparent>
+                            <Icon active name="thumbs-up" />
+                            <Text>12 Likes</Text>
+                        </Button>
+                    </Left>
+                    <Body>
+                        <Button transparent>
+                            <Icon active name="chatbubbles" />
+                            <Text>4 Comments</Text>
+                        </Button>
+                    </Body>
+                    <Right>
+                        <Text>11h ago</Text>
+                    </Right>
+                </CardItem>
+            </Card>
         )
     }
 
@@ -155,7 +157,6 @@ export default observer(class Posts extends Component {
             //console.log('firstPage:', firstPage);
             return (
                 <Container>
-                    <Text>{this.state.count}</Text>
                     <List>
                         <ListView
                         dataSource={store.posts.dataSource}
@@ -177,7 +178,7 @@ export default observer(class Posts extends Component {
                                 style={{marginTop: 20}}
                                 onPress={this.nextPage.bind(this)}
                                 primary
-                                disabled={finalPage && !this.state.nextUrl}
+                                disabled={finalPage}
                                 >
                             <Text style={{color: 'white'}}>Next</Text>
                             <Icon name='arrow-forward' style={{color: 'white',}} />

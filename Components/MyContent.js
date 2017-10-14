@@ -7,8 +7,10 @@ import {NativeRouter, Route, Link, Redirect} from 'react-router-native';
 import store from '../Store';
 import Login from './Login';
 import Posts from './Posts';
+import PostDetails from './PostDetails';
 import NewPost from './NewPost';
 import SignOut from './SignOut';
+import Update from './Update';
 
 export default observer(class MyContent extends React.Component {
 
@@ -49,11 +51,13 @@ export default observer(class MyContent extends React.Component {
     return (
             <NativeRouter>
                 <Container style={{backgroundColor: 'gainsboro'}}>
-                    <Content>
+                    <Content padder>
                         <Route exact path="/" render={()=><Login store={this.props.store}/>} />
                         <Route exact path="/SignOut" render={()=><SignOut store={this.props.store}/>} />
                         <Route exact path="/Posts" render={()=><Posts store={this.props.store}/>} />
                         <Route exact path="/NewPost" render={()=><NewPost store={this.props.store}/>} />
+                        <Route exact path="/PostDetails" render={()=><PostDetails store={this.props.store}/>} />
+                        <Route exact path="/Update" render={()=><Update store={this.props.store}/>} />
                     </Content>
                     {this.isAuthenticated()}
                 </Container>
